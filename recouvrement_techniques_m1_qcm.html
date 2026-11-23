@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="fr"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>QCM du module 1 — Comprendre le recouvrement</title>
+<style>
+
+:root{--prune:#8C1E70;--prune-fonce:#5E1349;--prune-clair:#F4E6EE;--accent:#C77BAA;
+ --vert:#283C28;--gris:#3C3C3C;--gris-moyen:#8A7A85;--filet:#E8DCE5;--creme:#FAF6F8;
+ --ok:#2F7A4F;--ko:#B23B3B;--amb:#B5852A;}
+*{box-sizing:border-box}
+body{margin:0;background:var(--creme);color:var(--gris);
+ font-family:"Nunito","Segoe UI",Helvetica,Arial,sans-serif;font-size:16px;line-height:1.62}
+.wrap{max-width:900px;margin:0 auto;padding:0 18px 60px}
+header.bandeau{background:var(--prune-fonce);color:#fff;padding:18px 0;border-bottom:4px solid var(--accent)}
+header.bandeau .wrap{padding-bottom:0}
+.chapitre{font-size:12.5px;letter-spacing:.14em;text-transform:uppercase;color:#EAD3E3}
+.chapitre span{color:var(--accent);margin:0 6px}
+h1{font-family:Georgia,"Times New Roman",serif;font-size:27px;line-height:1.25;margin:8px 0 4px;color:#fff}
+.sous{color:#EAD3E3;font-size:14.5px;margin:0}
+h2{font-family:Georgia,"Times New Roman",serif;font-size:20px;color:var(--prune-fonce);
+ margin:34px 0 0;padding-bottom:8px;border-bottom:2px solid var(--filet)}
+h2 .num{color:var(--accent);margin-right:8px}
+h3{font-size:15px;color:var(--vert);margin:20px 0 8px;letter-spacing:.02em}
+.carte{background:#fff;border:1px solid var(--filet);border-radius:10px;padding:20px 22px;margin:18px 0;
+ box-shadow:0 1px 2px rgba(94,19,73,.05)}
+.enc{background:var(--prune-clair);border-left:5px solid var(--prune);padding:14px 18px;
+ border-radius:0 8px 8px 0;margin:18px 0;font-size:15.2px}
+.enc .t{display:block;font-size:11.5px;letter-spacing:.11em;text-transform:uppercase;
+ font-weight:800;color:var(--prune-fonce);margin-bottom:6px}
+.enc.al{background:#FBF4F4;border-left-color:var(--ko)}.enc.al .t{color:var(--ko)}
+.enc.ci{background:#FCF8F0;border-left-color:var(--amb)}.enc.ci .t{color:#8A6418}
+.situ{background:#FCF9FB;border:1px dashed var(--filet);border-radius:8px;padding:16px 18px;margin:16px 0;font-size:15.2px}
+.duo{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:16px 0}
+.duo>div{background:#fff;border:1px solid var(--filet);border-radius:9px;padding:15px 17px;font-size:14.8px}
+.duo .h{font-weight:800;color:var(--prune-fonce);margin-bottom:7px;font-size:14.5px}
+.tri{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:16px 0}
+.tri>div{background:#fff;border:1px solid var(--filet);border-radius:9px;padding:14px 15px;font-size:14.3px}
+.quad{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:16px 0}
+.quad>div{background:#fff;border:1px solid var(--filet);border-radius:9px;padding:12px 13px;font-size:13.6px}
+.quad .h{font-weight:800;color:var(--prune-fonce);margin-bottom:6px;font-size:13px;
+ text-transform:uppercase;letter-spacing:.04em}
+.tri .h{font-weight:800;color:var(--prune-fonce);margin-bottom:6px;font-size:13.5px;
+ text-transform:uppercase;letter-spacing:.05em}
+table{width:100%;border-collapse:collapse;margin:14px 0;font-size:14.8px;background:#fff}
+th,td{border:1px solid var(--filet);padding:9px 12px;text-align:left}
+thead th{background:var(--prune-clair);color:var(--prune-fonce);font-size:13.5px}
+tbody th{font-weight:600;color:var(--gris)}
+td.n{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+tr.tot td,tr.tot th{background:#FBF3F8;font-weight:800;color:var(--prune-fonce)}
+.dl{display:inline-flex;align-items:center;gap:9px;background:var(--prune);color:#fff;text-decoration:none;
+ padding:11px 20px;border-radius:8px;font-weight:700;font-size:15px;margin:20px 0 4px}
+.dl:hover{background:var(--prune-fonce)}
+ol.q{padding-left:0;list-style:none;counter-reset:q}
+ol.q>li{margin:16px 0;padding-left:38px;position:relative}
+ol.q>li::before{counter-increment:q;content:counter(q);position:absolute;left:0;top:1px;
+ width:26px;height:26px;border-radius:50%;background:var(--prune-clair);color:var(--prune-fonce);
+ font-weight:800;font-size:14px;display:flex;align-items:center;justify-content:center}
+b,strong{color:var(--vert)}
+footer{text-align:center;font-size:12.5px;color:var(--gris-moyen);padding:26px 18px 12px;
+ border-top:1px solid var(--filet);margin-top:44px}
+@media(max-width:860px){.quad{grid-template-columns:1fr 1fr}}
+@media(max-width:640px){.duo,.tri,.quad{grid-template-columns:1fr}h1{font-size:22px}}
+@media print{body{background:#fff}.dl{display:none}header.bandeau{background:#5E1349 !important;-webkit-print-color-adjust:exact;print-color-adjust:exact}}
+
+
+.champ{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin:11px 0;
+ padding:11px 13px;background:#FCF9FB;border:1px solid var(--filet);border-radius:9px}
+.champ .lb{flex:1 1 340px;font-size:15px}
+.champ .pts{font-size:12px;color:var(--gris-moyen);white-space:nowrap}
+input.num,select.ch{font-family:inherit;font-size:15px;padding:9px 12px;border:1.5px solid var(--filet);
+ border-radius:8px;background:#fff;color:var(--gris);min-width:210px}
+input.num{min-width:150px;text-align:right;font-variant-numeric:tabular-nums}
+input.num:focus,select.ch:focus{outline:none;border-color:var(--prune)}
+input.num:disabled,select.ch:disabled{background:#F1EBEF;color:var(--gris-moyen);cursor:not-allowed}
+.champ.just{border-color:#BFE0CC;background:#F3FAF5}
+.champ.faux{border-color:#EFC9C9;background:#FDF5F5}
+.verdict{font-weight:800;font-size:13px;white-space:nowrap}
+.verdict.ok{color:var(--ok)}.verdict.ko{color:var(--ko)}
+.btn{display:inline-flex;align-items:center;gap:9px;background:var(--prune);color:#fff;border:0;
+ padding:12px 22px;border-radius:8px;font-family:inherit;font-weight:800;font-size:15px;cursor:pointer}
+.btn:hover{background:var(--prune-fonce)}
+.btn:disabled{background:#C9B7C3;cursor:not-allowed}
+.btn.sec{background:#fff;color:var(--prune-fonce);border:1.5px solid var(--filet)}
+.btn.sec:hover{background:var(--prune-clair)}
+.barre{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin-top:16px}
+.fige{display:inline-block;font-size:11.5px;letter-spacing:.09em;text-transform:uppercase;font-weight:800;
+ color:var(--prune-fonce);background:var(--prune-clair);padding:6px 11px;border-radius:20px}
+.corr{display:none;margin-top:16px}.corr.on{display:block}
+.score{display:flex;flex-wrap:wrap;gap:18px;align-items:baseline;
+ background:var(--prune-fonce);color:#fff;border-radius:10px;padding:18px 22px;margin:18px 0}
+.score .gros{font-family:Georgia,serif;font-size:32px;font-weight:700;color:#fff}
+.score .lib{font-size:14px;color:#EAD3E3}
+.opt{display:block;background:#fff;border:1.5px solid var(--filet);border-radius:9px;
+ padding:11px 14px;margin:8px 0;font-size:15px;cursor:pointer}
+.opt:hover{border-color:var(--accent)}
+.opt input{margin-right:10px}
+.opt.sel{border-color:var(--prune);background:var(--prune-clair)}
+.opt.bonne{border-color:var(--ok);background:#F3FAF5}
+.opt.mauvaise{border-color:var(--ko);background:#FDF5F5}
+.opt.verrou{cursor:not-allowed}
+.qbloc{background:#fff;border:1px solid var(--filet);border-radius:10px;padding:18px 20px;margin:16px 0}
+.qnum{font-size:11.5px;letter-spacing:.11em;text-transform:uppercase;font-weight:800;color:var(--accent)}
+.qth{display:inline-block;font-size:11px;letter-spacing:.06em;text-transform:uppercase;font-weight:800;
+ color:var(--prune-fonce);background:var(--prune-clair);padding:4px 9px;border-radius:20px;margin-left:8px}
+.qen{font-size:16.5px;font-weight:700;color:var(--vert);margin:8px 0 4px}
+.multi{font-size:12.5px;color:var(--gris-moyen);font-style:italic;margin-bottom:6px}
+.prog{height:8px;background:var(--filet);border-radius:20px;overflow:hidden;margin:14px 0 4px}
+.prog i{display:block;height:100%;background:var(--prune);width:0;transition:width .25s}
+.sticky{position:sticky;bottom:0;background:var(--creme);padding:12px 0;border-top:1px solid var(--filet)}
+.redac{width:100%;font-family:inherit;font-size:15px;line-height:1.6;padding:12px 14px;
+ border:1.5px solid var(--filet);border-radius:9px;background:#fff;color:var(--gris);resize:vertical}
+.redac:focus{outline:none;border-color:var(--prune)}
+.redac:disabled{background:#F1EBEF;color:var(--gris-moyen)}
+.cpt{font-size:12.5px;color:var(--gris-moyen);margin-top:5px}
+.sticky{position:sticky;bottom:0}
+#voile{position:fixed;inset:0;background:rgba(94,19,73,.93);z-index:99;
+ display:flex;align-items:center;justify-content:center;padding:20px}
+#voile .ident{background:var(--creme);border-radius:14px;padding:26px 28px;max-width:520px;width:100%}
+#voile .champ{background:#fff}
+@media print{.btn,.sticky,#voile{display:none}}
+
+</style></head>
+<body>
+<header class="bandeau"><div class="wrap">
+ <div class="chapitre">Recouvrement · Journée 1 <span>/</span> Techniques de recouvrement — Module 1</div><h1>QCM du module 1</h1><p class="sous">15 questions · 4 thèmes · seuil de réussite 70 % · bilan téléchargeable</p>
+</div></header>
+<div class="wrap">
+
+<div class="carte">
+<div class="enc"><span class="t">AVANT DE COMMENCER</span>15 questions sur l'ensemble du module, réparties en 4 thèmes. Deux d'entre elles appellent <b>PLUSIEURS RÉPONSES</b> : elles sont signalées et se comptent tout ou rien. Le seuil de réussite est fixé à <b>70 %</b>, soit 11 bonnes réponses sur 15. La validation n'est possible qu'une fois toutes les questions traitées ; ensuite, vos réponses sont figées et la correction s'affiche.</div>
+<div class="enc ci"><span class="t">CE QUE VOUS OBTIENDREZ</span>À la validation, un <b>BILAN</b> se télécharge : score global, résultat par thème et détail question par question, avec la bonne réponse et son explication. C'est ce document qui atteste de votre passage.</div>
+</div>
+
+<div class="prog"><i id="jauge"></i></div>
+<p style="font-size:13px;color:var(--gris-moyen);margin:0 0 6px" id="compteur">0 question traitée sur 15</p>
+
+<div id="questions"></div>
+<div id="resultat"></div>
+
+<div class="barre sticky">
+ <button class="btn" id="valider" disabled>Valider le QCM et télécharger le bilan</button>
+ <span id="etatBtn" style="font-size:13px;color:var(--gris-moyen)">Répondez aux 15 questions pour pouvoir valider.</span>
+</div>
+
+<footer>TMK Performances - N° Siret : 49841924100027 - Code NAF : 8559A</footer>
+</div>
+<script>
+/* ---------- blocage du copier-coller ---------- */
+['copy','cut','paste','contextmenu','dragstart','selectstart'].forEach(ev=>
+  document.addEventListener(ev, e=>e.preventDefault()));
+document.addEventListener('keydown', e=>{
+  if((e.ctrlKey||e.metaKey) && ['c','x','v','u','s','p','a'].includes(e.key.toLowerCase())) e.preventDefault();
+});
+const CODE = "recouvrement_techniques_m1_qcm";
+const BANDEAU = "Recouvrement · Journée 1 · Techniques de recouvrement / Module 1";
+const TITRE_BILAN = "Bilan du QCM — Comprendre le recouvrement";
+const THEMES = {
+ "DEF": "Définir le recouvrement",
+ "ENJ": "Utilité et enjeux",
+ "CAU": "Les causes de l'impayé",
+ "POS": "La posture du conseiller"
+};
+const Q = [
+ {
+  "th": "DEF",
+  "en": "Le recouvrement amiable consiste à…",
+  "op": [
+   "annuler la dette d'un client en difficulté",
+   "obtenir le paiement par le dialogue, sans passer par un juge",
+   "saisir le tribunal dès le premier retard",
+   "céder la dette à une autre entreprise"
+  ],
+  "c": 1,
+  "ex": "L'amiable repose sur le dialogue et l'accord avec le client.",
+  "rf": "Fiche mémo du module 1"
+ },
+ {
+  "th": "DEF",
+  "en": "Dans un dossier de recouvrement, le débiteur est…",
+  "op": [
+   "le conseiller chargé du dossier",
+   "la personne qui doit la somme",
+   "l'entreprise à qui la somme est due",
+   "le commissaire de justice"
+  ],
+  "c": 1,
+  "ex": "Débiteur : celui qui doit. Créancier : celui à qui l'on doit.",
+  "rf": "Fiche mémo du module 1"
+ },
+ {
+  "th": "DEF",
+  "en": "À quel moment une somme devient-elle un impayé ?",
+  "op": [
+   "Quand elle n'a pas été réglée à la date prévue",
+   "À la réception de la facture",
+   "Dès la signature du contrat",
+   "Au premier appel du conseiller"
+  ],
+  "c": 0,
+  "ex": "Tant que la date n'est pas passée, rien n'est impayé.",
+  "rf": "Fiche mémo du module 1"
+ },
+ {
+  "th": "DEF",
+  "en": "Quelles actions font partie du travail d'un service recouvrement ? (plusieurs réponses)",
+  "op": [
+   "Suivre le respect des accords",
+   "Fixer le montant des frais de justice",
+   "Relancer par écrit et par téléphone",
+   "Négocier des modalités de paiement"
+  ],
+  "c": [
+   0,
+   2,
+   3
+  ],
+  "ex": "Relancer, négocier, suivre. Les frais de justice relèvent du juge et des professionnels de l'exécution.",
+  "rf": "Fiche mémo du module 1",
+  "multi": true
+ },
+ {
+  "th": "ENJ",
+  "en": "Pour une entreprise, un impayé qui n'est jamais recouvré…",
+  "op": [
+   "n'a aucune conséquence",
+   "devient une vente comme une autre",
+   "est une perte qui pèse sur sa trésorerie",
+   "est automatiquement remboursé par l'État"
+  ],
+  "c": 2,
+  "ex": "Une vente non payée est une perte sèche.",
+  "rf": "Fiche mémo du module 1"
+ },
+ {
+  "th": "ENJ",
+  "en": "Que gagne le client à conclure un accord amiable ?",
+  "op": [
+   "Il évite une procédure judiciaire plus lourde et plus coûteuse",
+   "Une remise systématique sur sa dette",
+   "Rien de plus qu'avec une procédure judiciaire",
+   "Le droit de ne plus payer ses prochaines échéances"
+  ],
+  "c": 0,
+  "ex": "L'amiable lui laisse la main sur la solution et lui épargne les frais d'une procédure.",
+  "rf": "Fiche mémo du module 1"
+ },
+ {
+  "th": "ENJ",
+  "en": "Pourquoi une dette récente est-elle plus facile à recouvrer qu'une dette ancienne ?",
+  "op": [
+   "Parce que les intérêts sont plus élevés",
+   "La somme est encore faible et le client joignable ; avec le temps, les échéances s'accumulent",
+   "Parce qu'une dette ancienne n'est plus due",
+   "Parce que le juge refuse les dettes récentes"
+  ],
+  "c": 1,
+  "ex": "Chaque mois ajoute une échéance : plus tôt, plus simple.",
+  "rf": "Fiche mémo du module 1"
+ },
+ {
+  "th": "ENJ",
+  "en": "Un accord amiable bien conduit permet aussi…",
+  "op": [
+   "de clore le contrat",
+   "d'éviter de tracer l'appel",
+   "de conserver le client",
+   "de facturer des frais de dossier"
+  ],
+  "c": 2,
+  "ex": "Le judiciaire rompt souvent la relation ; l'amiable la préserve.",
+  "rf": "Fiche mémo du module 1"
+ },
+ {
+  "th": "CAU",
+  "en": "Le prélèvement de Mme Aubert a été rejeté : elle a changé de compte et n'a pas transmis son nouveau RIB. Il s'agit…",
+  "op": [
+   "d'un oubli, souvent réglé par un paiement immédiat",
+   "de mauvaise volonté",
+   "d'une contestation",
+   "d'une difficulté durable"
+  ],
+  "c": 0,
+  "ex": "Elle a les fonds : le paiement immédiat est la solution naturelle.",
+  "rf": "Fiche mémo du module 1"
+ },
+ {
+  "th": "CAU",
+  "en": "M. Hamel a perdu son emploi il y a trois mois. Sa situation relève…",
+  "op": [
+   "d'un oubli",
+   "d'une difficulté durable, qui appelle une solution sur la durée",
+   "d'un incident bancaire",
+   "d'une contestation"
+  ],
+  "c": 1,
+  "ex": "Une solution trop courte ne serait pas tenue : il faut un accord réaliste, et parfois une orientation vers une aide.",
+  "rf": "Fiche mémo du module 1"
+ },
+ {
+  "th": "CAU",
+  "en": "Un client conteste le montant d'une facture. Que faites-vous ?",
+  "op": [
+   "Vous faites vérifier la contestation ; la partie non contestée reste due",
+   "Vous lui conseillez de ne rien payer",
+   "Vous annulez la facture",
+   "Vous maintenez la relance sur la totalité"
+  ],
+  "c": 0,
+  "ex": "La contestation se vérifie ; elle ne suspend pas ce qui n'est pas contesté.",
+  "rf": "Fiche mémo du module 1"
+ },
+ {
+  "th": "CAU",
+  "en": "Quelle question vous aide à identifier la cause d'un impayé ?",
+  "op": [
+   "« Vous savez que vous devez payer ? »",
+   "« Vous comptez payer quand ? »",
+   "« Que s'est-il passé ? »",
+   "« Pourquoi n'avez-vous pas payé ? »"
+  ],
+  "c": 2,
+  "ex": "Une question ouverte et neutre ; « pourquoi » sonne comme un reproche.",
+  "rf": "Fiche mémo du module 1"
+ },
+ {
+  "th": "POS",
+  "en": "Quelle phrase correspond à la posture attendue ?",
+  "op": [
+   "« Je vous appelle pour que nous trouvions ensemble une solution pour cette échéance. »",
+   "« Ce n'est pas à moi de trouver une solution. »",
+   "« Vous êtes encore en retard, comme d'habitude. »",
+   "« Si vous ne payez pas, vous aurez des problèmes. »"
+  ],
+  "c": 0,
+  "ex": "Résoudre un problème avec le client, sans jugement ni menace.",
+  "rf": "Fiche mémo du module 1"
+ },
+ {
+  "th": "POS",
+  "en": "Avant de parler de la dette au téléphone, vous devez…",
+  "op": [
+   "vérifier que vous parlez au titulaire du contrat",
+   "annoncer le montant à la personne qui décroche",
+   "demander l'autorisation de votre superviseur",
+   "envoyer un SMS"
+  ],
+  "c": 0,
+  "ex": "Confidentialité : la dette ne se discute qu'avec le titulaire.",
+  "rf": "Fiche mémo du module 1"
+ },
+ {
+  "th": "POS",
+  "en": "Quelles attitudes sont à proscrire ? (plusieurs réponses)",
+  "op": [
+   "Écouter la situation du client",
+   "Menacer le client",
+   "Juger le client",
+   "Parler de la dette à un voisin"
+  ],
+  "c": [
+   1,
+   2,
+   3
+  ],
+  "ex": "Écouter fait partie du métier ; juger, menacer ou divulguer, jamais.",
+  "rf": "Fiche mémo du module 1",
+  "multi": true
+ }
+];
+const SEUIL = 70;
+const rep = Q.map(()=>null);
+let valide = false;
+
+function rendre(){
+ document.getElementById('questions').innerHTML = Q.map((q,i)=>`
+  <div class="qbloc" id="q${i}">
+   <span class="qnum">Question ${i+1} / ${Q.length}</span><span class="qth">${THEMES[q.th]}</span>
+   <div class="qen">${q.en}</div>
+   ${q.multi?'<div class="multi">Plusieurs réponses attendues — la question est juste seulement si la sélection est exactement la bonne.</div>':''}
+   ${q.ouverte
+     ? `<div class="multi">Question rédigée — ${q.minlen} caractères au minimum. Elle n'est pas notée automatiquement : votre réponse est reportée au bilan, avec la réponse modèle.</div>
+        <textarea class="redac" id="t${i}" rows="6" placeholder="Rédigez votre réponse…"></textarea>
+        <div class="cpt" id="cpt${i}">0 caractère</div>`
+     : q.op.map((o,j)=>`
+     <label class="opt" id="o${i}_${j}">
+      <input type="${q.multi?'checkbox':'radio'}" name="q${i}" value="${j}"> ${o}
+     </label>`).join('')}
+   <div class="corr" id="c${i}"></div>
+  </div>`).join('');
+
+ Q.forEach((q,i)=>{
+   if(q.ouverte){ document.getElementById('t'+i).addEventListener('input',()=>saisie(i)); }
+   else q.op.forEach((o,j)=>document.getElementById('o'+i+'_'+j).addEventListener('change',()=>saisie(i)));
+ });
+}
+
+function saisie(i){
+ if(valide) return;
+ const q = Q[i];
+ if(q.ouverte){
+   const t = document.getElementById('t'+i).value.trim();
+   document.getElementById('cpt'+i).textContent = t.length + (t.length>1?' caractères':' caractère')
+     + (t.length < q.minlen ? ' — encore ' + (q.minlen - t.length) : ' — longueur suffisante');
+   rep[i] = t.length >= q.minlen ? t : null;
+   avancement(); return;
+ }
+ const coches = [...document.querySelectorAll('input[name="q'+i+'"]')]
+   .map((el,j)=>el.checked?j:-1).filter(j=>j>=0);
+ rep[i] = q.multi ? (coches.length?coches:null) : (coches.length?coches[0]:null);
+ q.op.forEach((o,j)=>document.getElementById('o'+i+'_'+j)
+   .classList.toggle('sel', coches.includes(j)));
+ avancement();
+}
+
+function avancement(){
+ const faites = rep.filter(r=>r!==null).length;
+ document.getElementById('jauge').style.width = Math.round(faites/Q.length*100)+'%';
+ document.getElementById('compteur').textContent =
+   faites + (faites>1?' questions traitées':' question traitée') + ' sur ' + Q.length;
+ const b = document.getElementById('valider');
+ b.disabled = faites < Q.length;
+ document.getElementById('etatBtn').textContent = b.disabled
+   ? 'Répondez aux ' + Q.length + ' questions pour pouvoir valider.'
+   : 'Vous pouvez valider. Vos réponses seront alors figées.';
+}
+
+const AUTO = Q.map((q,i)=>i).filter(i=>!Q[i].ouverte);
+
+function juste(i){
+ const q = Q[i], r = rep[i];
+ if(q.ouverte || r===null) return false;
+ if(!q.multi) return r === q.c;
+ const a = [...r].sort().join(','), b = [...q.c].sort().join(',');
+ return a === b;
+}
+
+function libelle(i){
+ const q = Q[i], r = rep[i];
+ if(r===null) return "aucune réponse";
+ if(q.ouverte) return r;
+ return q.multi ? r.map(j=>q.op[j]).join(' + ') : q.op[r];
+}
+function attendu(i){
+ const q = Q[i];
+ return q.multi ? q.c.map(j=>q.op[j]).join(' + ') : q.op[q.c];
+}
+
+function corriger(){
+ valide = true;
+ document.querySelectorAll('.opt input').forEach(el=>el.disabled=true);
+ document.querySelectorAll('.redac').forEach(el=>el.disabled=true);
+ document.querySelectorAll('.opt').forEach(el=>el.classList.add('verrou'));
+ Q.forEach((q,i)=>{
+  if(q.ouverte){
+   const c = document.getElementById('c'+i);
+   c.className = 'corr on';
+   c.innerHTML = '<div class="enc ci"><span class="t">CORRIGÉE PAR LE FORMATEUR</span>'
+     + '<b>Réponse modèle.</b> ' + q.modele
+     + '<br><br><b>Grille en 5 points.</b><ul style="margin:6px 0 0 18px">'
+     + q.grille.map(p=>'<li>'+p+'</li>').join('') + '</ul>'
+     + '<br><i style="font-size:13px;color:var(--gris-moyen)">' + q.rf + '</i></div>';
+   return;
+  }
+  const ok = juste(i);
+  const bonnes = q.multi ? q.c : [q.c];
+  q.op.forEach((o,j)=>{
+    const el = document.getElementById('o'+i+'_'+j);
+    el.classList.remove('sel');
+    if(bonnes.includes(j)) el.classList.add('bonne');
+    const choisi = q.multi ? rep[i].includes(j) : rep[i]===j;
+    if(choisi && !bonnes.includes(j)) el.classList.add('mauvaise');
+  });
+  const c = document.getElementById('c'+i);
+  c.className = 'corr on';
+  c.innerHTML = `<div class="enc ${ok?'':'al'}"><span class="t">${ok?'✓ RÉPONSE JUSTE':'✗ RÉPONSE ATTENDUE : '+attendu(i)}</span>${q.ex}<br><i style="font-size:13px;color:var(--gris-moyen)">${q.rf}</i></div>`;
+ });
+
+ const score = AUTO.reduce((s,i)=>s+(juste(i)?1:0),0);
+ const NB = AUTO.length;
+ const pct = Math.round(score/NB*100);
+ const reussi = pct >= SEUIL;
+
+ const parTheme = {};
+ Object.keys(THEMES).forEach(t=>parTheme[t]={n:0,ok:0});
+ AUTO.forEach(i=>{ parTheme[Q[i].th].n++; if(juste(i)) parTheme[Q[i].th].ok++; });
+ Object.keys(parTheme).forEach(t=>{ if(parTheme[t].n===0) delete parTheme[t]; });
+
+ document.getElementById('resultat').innerHTML = `
+  <h2><span class="num">·</span>Votre résultat</h2>
+  <div class="score"><span class="gros">${score} / ${NB}</span>
+   <span class="lib">${pct} % — seuil de réussite fixé à ${SEUIL} %${Q.length>NB ? ' · '+(Q.length-NB)+' question(s) rédigée(s) corrigée(s) par le formateur' : ''}</span></div>
+  <div class="carte">
+   <div class="enc ${reussi?'':'ci'}"><span class="t">${reussi?'SEUIL ATTEINT':'SEUIL NON ATTEINT'}</span>${
+     reussi
+     ? "Le module 1 est validé : vous savez ce qu'est le recouvrement, à quoi il sert, et comment l'aborder. Passez au module 2, consacré aux mots et à la procédure."
+     : "Reprenez la fiche mémo du module 1, en particulier les thèmes où votre score est le plus bas, puis refaites l'exercice d'entraînement avant de repasser ce QCM."}</div>
+   <table><thead><tr><th>Thème</th><th>Résultat</th></tr></thead><tbody>
+   ${Object.keys(parTheme).map(t=>`<tr><td>${THEMES[t]}</td><td class="n">${parTheme[t].ok} / ${parTheme[t].n}</td></tr>`).join('')}
+   <tr class="tot"><td>Total</td><td class="n">${score} / ${NB}</td></tr>
+   </tbody></table>
+   <div class="barre">
+    <button class="btn sec" id="retelecharger">⬇ Télécharger à nouveau le bilan</button>
+    <button class="btn sec" id="refaire">↻ Refaire le QCM pour m'entraîner</button>
+   </div>
+   <p style="font-size:12.5px;color:var(--gris-moyen);font-style:italic">Le bilan a été téléchargé automatiquement à la validation. Un nouveau passage ne remplace pas ce bilan : il ne sert qu'à l'entraînement.</p>
+  </div>`;
+
+ document.getElementById('valider').style.display='none';
+ document.getElementById('etatBtn').textContent = 'QCM validé — réponses figées.';
+ document.getElementById('retelecharger').addEventListener('click',()=>bilanHtml(score,pct,reussi,parTheme,NB));
+ document.getElementById('refaire').addEventListener('click',()=>location.reload());
+ bilanHtml(score,pct,reussi,parTheme,NB);
+ document.getElementById('resultat').scrollIntoView?.({behavior:'smooth',block:'start'});
+}
+
+function bilanHtml(score,pct,reussi,parTheme,NB){
+ const d = new Date();
+ const dd = d.toLocaleDateString('fr-FR') + ' à ' + d.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});
+ const doc = `<!DOCTYPE html><html lang="fr"><head><meta charset="utf-8">
+<title>Bilan — ${TITRE_BILAN}</title>
+<style>
+body{font-family:Nunito,Segoe UI,Arial,sans-serif;background:#FAF6F8;color:#3C3C3C;margin:0;line-height:1.6}
+.w{max-width:860px;margin:0 auto;padding:0 18px 50px}
+header{background:#5E1349;color:#fff;padding:20px 0;border-bottom:4px solid #C77BAA}
+h1{font-family:Georgia,serif;font-size:24px;margin:6px 0}
+h2{font-family:Georgia,serif;font-size:19px;color:#5E1349;border-bottom:2px solid #E8DCE5;padding-bottom:7px;margin-top:30px}
+.k{font-size:12px;letter-spacing:.13em;text-transform:uppercase;color:#EAD3E3}
+.sc{background:#5E1349;color:#fff;border-radius:10px;padding:16px 20px;margin:16px 0;font-family:Georgia,serif;font-size:26px}
+.sc small{font-family:Nunito,Arial,sans-serif;font-size:14px;color:#EAD3E3;display:block}
+table{width:100%;border-collapse:collapse;background:#fff;margin:12px 0;font-size:14.5px}
+th,td{border:1px solid #E8DCE5;padding:8px 11px;text-align:left}
+thead th{background:#F4E6EE;color:#5E1349}
+.q{background:#fff;border:1px solid #E8DCE5;border-left:5px solid #2F7A4F;border-radius:8px;padding:13px 16px;margin:12px 0}
+.q.ko{border-left-color:#B23B3B}
+.q b{color:#283C28}
+.et{font-size:11.5px;letter-spacing:.1em;text-transform:uppercase;font-weight:800;color:#2F7A4F}
+.q.ko .et{color:#B23B3B}
+footer{text-align:center;font-size:12.5px;color:#8A7A85;border-top:1px solid #E8DCE5;margin-top:36px;padding-top:18px}
+@media print{body{background:#fff}}
+</style></head><body>
+<header><div class="w"><div class="k">${BANDEAU}</div>
+<h1>${TITRE_BILAN}</h1>
+<div class="k">Passage du ${dd}</div>
+${IDENT.actif ? '<div class="k">'+IDENT.prenom+' '+IDENT.nom+'</div>' : ''}</div></header><div class="w">
+<div class="sc">${score} / ${NB}<small>${pct} % — seuil de réussite ${SEUIL} % — ${reussi?'seuil atteint':'seuil non atteint'}</small></div>
+<h2>Résultat par thème</h2>
+<table><thead><tr><th>Thème</th><th>Résultat</th></tr></thead><tbody>
+${Object.keys(parTheme).map(t=>`<tr><td>${THEMES[t]}</td><td>${parTheme[t].ok} / ${parTheme[t].n}</td></tr>`).join('')}
+</tbody></table>
+<h2>Détail des réponses</h2>
+${Q.map((q,i)=>q.ouverte
+? `<div class="q op"><div class="et">Question ${i+1} — ${THEMES[q.th]} — à corriger par le formateur</div>
+<p><b>${q.en}</b></p><p>Réponse rédigée :</p><p style="white-space:pre-wrap">${libelle(i)}</p>
+<p><b>Réponse modèle.</b> ${q.modele}</p>
+<p><b>Grille en 5 points.</b></p><ul>${q.grille.map(p=>'<li>'+p+'</li>').join('')}</ul>
+<p style="color:#8A7A85;font-size:13px">${q.rf}</p></div>`
+: `<div class="q ${juste(i)?'':'ko'}">
+<div class="et">Question ${i+1} — ${THEMES[q.th]} — ${juste(i)?'juste':'erreur'}</div>
+<p><b>${q.en}</b></p>
+<p>Votre réponse : ${libelle(i)}</p>
+${juste(i)?'':'<p>Réponse attendue : <b>'+attendu(i)+'</b></p>'}
+<p>${q.ex}</p><p style="color:#8A7A85;font-size:13px">${q.rf}</p></div>`).join('')}
+<footer>TMK Performances - N° Siret : 49841924100027 - Code NAF : 8559A</footer>
+</div></body></html>`;
+ const b = new Blob([doc],{type:'text/html;charset=utf-8'});
+ const a = document.createElement('a');
+ a.href = URL.createObjectURL(b);
+ a.download = 'Bilan_QCM_' + CODE + (IDENT.actif ? '_' + IDENT.nom.replace(/[^A-Za-zÀ-ÿ-]/g,'') : '') + '_' + d.toISOString().slice(0,10) + '.html';
+ document.body.appendChild(a); a.click(); document.body.removeChild(a);
+ setTimeout(()=>URL.revokeObjectURL(a.href), 2000);
+}
+
+document.getElementById('valider').addEventListener('click',()=>{
+ if(rep.filter(r=>r!==null).length < Q.length) return;
+ corriger();
+});
+
+rendre(); avancement();
+
+
+/* ---------- écran d'identité : 360Learning oui, LMS non ----------
+   Le portail du LMS connaît déjà le stagiaire par sa session : l'écran y
+   ferait doublon. Il est donc sauté lorsque l'URL porte ?lms=1, valeur
+   ajoutée au media_url dans la matrice. Partout ailleurs — 360Learning,
+   ouverture directe — l'écran s'affiche et son identité est reportée
+   dans le bilan téléchargé. */
+const IDENT = {actif:false, nom:'', prenom:''};
+
+function contexteLms(){
+  const p = new URLSearchParams(window.location.search);
+  return p.get('lms') === '1' || p.get('contexte') === 'lms';
+}
+
+function ecranIdentite(){
+  if(contexteLms()) return;
+  const v = document.createElement('div');
+  v.id = 'voile';
+  v.innerHTML = `
+   <div class="ident">
+    <div class="qnum">Avant de commencer</div>
+    <div class="qen">Identifiez-vous</div>
+    <p style="font-size:14.5px;color:var(--gris-moyen);margin:0 0 14px">
+     Votre nom et votre prénom figureront sur le bilan que vous téléchargerez à la fin.</p>
+    <div class="champ"><span class="lb">Nom</span><input class="num" id="idNom" style="text-align:left"></div>
+    <div class="champ"><span class="lb">Prénom</span><input class="num" id="idPrenom" style="text-align:left"></div>
+    <div class="barre"><button class="btn" id="idOk">Commencer le QCM</button>
+     <span id="idErr" class="verdict ko"></span></div>
+   </div>`;
+  document.body.appendChild(v);
+  const valider = () => {
+    const n = document.getElementById('idNom').value.trim();
+    const p = document.getElementById('idPrenom').value.trim();
+    if(n.length < 2 || p.length < 2){
+      document.getElementById('idErr').textContent = 'Renseignez votre nom et votre prénom.'; return; }
+    IDENT.actif = true; IDENT.nom = n; IDENT.prenom = p;
+    v.remove();
+  };
+  document.getElementById('idOk').addEventListener('click', valider);
+  v.addEventListener('keydown', e => { if(e.key === 'Enter') valider(); });
+  document.getElementById('idNom').focus();
+}
+
+ecranIdentite();
+
+</script>
+</body></html>
